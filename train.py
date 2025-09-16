@@ -1,7 +1,7 @@
 import pickle
 from datetime import datetime
 from darts.models import TFTModel
-from uc6.utils import load_data_from_bq, preprocess_data, scale_series
+from uc.utils import load_data_from_bq, preprocess_data, scale_series
 from google.cloud import storage
 
 def train_tft_model(project_id, dataset, table, bucket_name, where=None, model_dir=None):
