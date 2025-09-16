@@ -18,7 +18,7 @@ IMAGE_URI = f"{REGION}-docker.pkg.dev/{PROJECT_ID}/forecasting/forecasting:lates
 )
 def train_component(project_id: str, dataset: str, table: str, bucket_name: str) -> str:
     """Train TFT model and return the GCS folder path for the trained model."""
-    from app.train import train_tft_model
+    from train import train_tft_model
     from datetime import datetime
 
     # versioned folder
@@ -51,7 +51,7 @@ def batch_predict_component(
     output_path: str = "predictions.csv"
 ):
     """Run batch prediction using a specified model folder."""
-    from app.batch_predict import predict
+    from batch_predict import predict
     import pandas as pd
 
     forecasts = predict(
