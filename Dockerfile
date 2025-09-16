@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/python3:3.11
+FROM gcr.io/google-appengine/python:3.11
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
