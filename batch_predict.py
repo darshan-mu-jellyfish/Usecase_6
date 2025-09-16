@@ -8,7 +8,7 @@ def predict(bucket_name, model_dir, project_id, dataset, table, where=None):
     """
     Load latest model from GCS and make batch predictions.
     """
-    from forecasting.app.utils import load_data_from_bq, preprocess_data, scale_series
+    from utils import load_data_from_bq, preprocess_data, scale_series
 
     client = storage.Client()
     bucket = client.bucket(bucket_name)
