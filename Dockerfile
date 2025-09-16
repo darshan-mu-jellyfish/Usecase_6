@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.11-slim
+FROM gcr.io/distroless/python3:3.11
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
