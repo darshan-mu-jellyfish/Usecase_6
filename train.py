@@ -10,7 +10,7 @@ def train_tft_model(project_id, dataset, table, bucket_name, where=None, model_d
     """
 
     from google.cloud import storage
-    from forecasting.app.utils import load_data_from_bq, preprocess_data, scale_series
+    from utils import load_data_from_bq, preprocess_data, scale_series
 
     # Load and preprocess data
     df = load_data_from_bq(project_id, dataset, table, where)
