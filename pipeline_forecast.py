@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     if args.mode == "train":
         print("🔹 Running training...")
-        from app.train import train_tft_model
+        from train import train_tft_model
         model_dir = train_tft_model(
             project_id=args.project_id,
             dataset=args.dataset,
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     elif args.mode == "predict":
         print("🔹 Running batch prediction...")
-        from app.batch_predict import predict
+        from batch_predict import predict
         forecasts = predict(
             bucket_name=args.bucket_name,
             model_dir=args.model_dir,   # explicit version
