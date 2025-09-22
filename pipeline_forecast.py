@@ -1,7 +1,7 @@
 import argparse
 import os
-from uc.train import train_tft_model
-from uc.batch_predict import predict
+from train import train_tft_model
+from batch_predict import predict
 
 def parse_args():
     parser = argparse.ArgumentParser()
