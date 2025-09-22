@@ -1,6 +1,6 @@
 import pickle
 from darts.models import TFTModel
-from uc.utils import load_data_from_bq, preprocess_data, scale_series
+from utils import load_data_from_bq, preprocess_data, scale_series
 from google.cloud import storage
 import os
 
