@@ -1,16 +1,9 @@
-FROM python:3.11-slim
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        git build-essential wget unzip ffmpeg libsndfile1 \
-    && rm -rf /var/lib/apt/lists/*
+FROM me-central1-docker.pkg.dev/gcp-npd-prj-data-shd01/gcp-npd-data-repo-shd02/python:3.11-slim
 
 WORKDIR /app
+
 COPY . .
 
-RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir "u8darts[torch]"
 
-ENV PYTHONPATH="/app:${PYTHONPATH}"
-ENTRYPOINT ["python", "-m", "uc.pipeline_forecast"]
+ENTRYPOINT ["python", "-m", "pipeline_forecast"]
