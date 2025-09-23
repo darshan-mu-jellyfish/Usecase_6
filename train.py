@@ -48,7 +48,9 @@ def train_tft_model(project_id, dataset, table, bucket_name, where=None):
         relative_name = blob.name[len(new_model_dir):].lstrip("/")
         dest_blob_name = f"{old_model_dir}/{relative_name}"
         bucket.copy_blob(blob, bucket, dest_blob_name)  # copy to old_models
-        blob.delete()  # remove from new_models
+        blob.delete()  
+        
+    return model# remove from new_models
 
     # Step 2: Upload the fresh model to new_models
     bucket.blob(f"{new_model_dir}/tft_model.pth.tar").upload_from_filename(local_model_path)
