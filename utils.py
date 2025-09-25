@@ -13,26 +13,27 @@ def load_data_from_bq(project_id: str, dataset: str, table: str, where: str = No
     client = bigquery.Client(project=project_id)
 
     query = f"""
-        SELECT ond,  
-                hit_datetime_gmt,
-                cabin_type,
-                platform,
-                mobile_devices,
-                nth_search_in_visit,
-                total_flight_searches,
-                total_bookings,
-                total_sales_inc_yq,
-                unique_visitors_in_segment,
-                conversion_rate_bookings_per_search,
-                avg_revenue_per_booking,
-                fsv_candidate_revenue_per_search
+        SELECT
+            ond,  
+            hit_datetime_gmt,
+            cabin_type,
+            platform,
+            mobile_devices,
+            nth_search_in_visit,
+            total_flight_searches,
+            total_bookings,
+            total_sales_inc_yq,
+            unique_visitors_in_segment,
+            conversion_rate_bookings_per_search,
+            avg_revenue_per_booking,
+            fsv_candidate_revenue_per_search
         FROM `{project_id}.{dataset}.{table}`
     """
     if where:
         query += f" WHERE {where}"
 
     df = client.query(query).to_dataframe()
-    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    df["hit_datetime_gmt"] = pd.to_datetime(df["hit_datetime_gmt"])
     return df
 
 # ------------------------
@@ -41,25 +42,29 @@ def load_data_from_bq(project_id: str, dataset: str, table: str, where: str = No
 def preprocess_data(df: pd.DataFrame):
     """
     Convert raw dataframe into Darts TimeSeries objects.
-    Combines series_id_encoded and category_encoded to create a unique series ID.
+    Creates unique series ID using ond + cabin_type + platform + mobile_devices.
     """
     series_list = []
     covariates_list = []
 
     # Create unique series identifier
-    df["unique_series_id"] = df["series_id_encoded"].astype(str) + "_" + df["category_encoded"].astype(str)
+    df["unique_series_id"] = (
+        df["ond"].astype(str) + "_" +
+        df["cabin_type"].astype(str) + "_" +
+        df["platform"].astype(str) + "_" +
+        df["mobile_devices"].astype(str)
+    )
 
     # Group by unique_series_id
     for series_id, group in df.groupby("unique_series_id"):
-        group = group.sort_values("timestamp")
-        # Ensure daily frequency and fill missing
-        group = group.set_index("timestamp").asfreq("D").fillna(method="ffill").reset_index()
+        group = group.sort_values("hit_datetime_gmt")
+        group = group.set_index("hit_datetime_gmt").asfreq("D").fillna(method="ffill").reset_index()
 
         # Target TimeSeries (sales)
         ts = TimeSeries.from_dataframe(
             group,
-            time_col="timestamp",
-            value_cols="sales",
+            time_col="hit_datetime_gmt",
+            value_cols="total_sales_inc_yq",
             freq="D"
         )
         series_list.append(ts)
@@ -67,8 +72,14 @@ def preprocess_data(df: pd.DataFrame):
         # Dynamic covariates TimeSeries
         cov = TimeSeries.from_dataframe(
             group,
-            time_col="timestamp",
-            value_cols=["on_promotion", "price"],
+            time_col="hit_datetime_gmt",
+            value_cols=[
+                "total_flight_searches",
+                "total_bookings",
+                "conversion_rate_bookings_per_search",
+                "avg_revenue_per_booking",
+                "fsv_candidate_revenue_per_search"
+            ],
             freq="D"
         )
         covariates_list.append(cov)
@@ -86,6 +97,10 @@ def scale_series(series_list, covariates_list):
     scaler_x = Scaler()
 
     series_scaled = [scaler_y.fit_transform(s) for s in series_list]
+    covs_scaled = [scaler_x.fit_transform(c) for c in covariates_list]
+
+    return series_scaled, covs_scaled, scaler_y, scaler_x
+
     covs_scaled = [scaler_x.fit_transform(c) for c in covariates_list]
 
     return series_scaled, covs_scaled, scaler_y, scaler_x
