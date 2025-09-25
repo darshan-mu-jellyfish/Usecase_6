@@ -13,7 +13,19 @@ def load_data_from_bq(project_id: str, dataset: str, table: str, where: str = No
     client = bigquery.Client(project=project_id)
 
     query = f"""
-        SELECT series_id_encoded, timestamp, sales, on_promotion, price, category_encoded
+        SELECT ond,  
+                hit_datetime_gmt,
+                cabin_type,
+                platform,
+                mobile_devices,
+                nth_search_in_visit,
+                total_flight_searches,
+                total_bookings,
+                total_sales_inc_yq,
+                unique_visitors_in_segment,
+                conversion_rate_bookings_per_search,
+                avg_revenue_per_booking,
+                fsv_candidate_revenue_per_search
         FROM `{project_id}.{dataset}.{table}`
     """
     if where:
