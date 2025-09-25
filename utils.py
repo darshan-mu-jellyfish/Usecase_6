@@ -60,11 +60,11 @@ def preprocess_data(df: pd.DataFrame):
         group = group.sort_values("hit_datetime_gmt")
         group = group.set_index("hit_datetime_gmt").asfreq("D").fillna(method="ffill").reset_index()
 
-        # Target TimeSeries (sales)
+        # Target TimeSeries (fsv_candidate_revenue_per_search)
         ts = TimeSeries.from_dataframe(
             group,
             time_col="hit_datetime_gmt",
-            value_cols="total_sales_inc_yq",
+            value_cols="fsv_candidate_revenue_per_search",
             freq="D"
         )
         series_list.append(ts)
@@ -78,7 +78,7 @@ def preprocess_data(df: pd.DataFrame):
                 "total_bookings",
                 "conversion_rate_bookings_per_search",
                 "avg_revenue_per_booking",
-                "fsv_candidate_revenue_per_search"
+                "total_sales_inc_yq"  # keep as input feature
             ],
             freq="D"
         )
@@ -97,10 +97,6 @@ def scale_series(series_list, covariates_list):
     scaler_x = Scaler()
 
     series_scaled = [scaler_y.fit_transform(s) for s in series_list]
-    covs_scaled = [scaler_x.fit_transform(c) for c in covariates_list]
-
-    return series_scaled, covs_scaled, scaler_y, scaler_x
-
     covs_scaled = [scaler_x.fit_transform(c) for c in covariates_list]
 
     return series_scaled, covs_scaled, scaler_y, scaler_x
