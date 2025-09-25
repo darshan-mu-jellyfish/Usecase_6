@@ -4,7 +4,7 @@ from darts.models import TFTModel
 from utils import load_data_from_bq, preprocess_data, scale_series
 from google.cloud import storage
 
-def train_tft_model(project_id, dataset, table, bucket_name, where=None):
+def train_tft_model(project_id, dataset, table, bucket_name, where=None, model_dir=None):
     # Load
     df = load_data_from_bq(project_id, dataset, table, where)
 
