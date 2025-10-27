@@ -11,3 +11,4 @@ google-cloud-aiplatform
 google-cloud-bigquery-storage
 db-dtypes
 joblib==1.4.2
+kfp
